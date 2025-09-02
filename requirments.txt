@@ -1,3 +1,5 @@
-streamlit
+
 cohere
 numpy
+python-dotenv
+streamlit
