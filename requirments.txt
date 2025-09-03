@@ -1,5 +1,5 @@
-
-cohere
+cohere==4.44.0
 numpy
 python-dotenv
 streamlit
+
