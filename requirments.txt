@@ -1,1 +1,7 @@
-streamlit==1.28.1 cohere==4.37 numpy==1.24.3 setuptools==70.0.0
+streamlit==1.28.
+
+ cohere==4.37
+
+numpy==1.24.3
+
+ setuptools==70.0.0
