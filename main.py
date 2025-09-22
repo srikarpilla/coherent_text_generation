@@ -7,44 +7,38 @@ import os
 # Initialize Cohere client with API key from environment variable
 try:
     co = cohere.Client(os.environ.get("COHERE_API_KEY"))
-except KeyError:
-    st.error("Cohere API key not found. Please set the COHERE_API_KEY environment variable.")
-    st.stop()
 except Exception as e:
     st.error(f"Failed to initialize Cohere client: {str(e)}")
     st.stop()
 
-# Streamlit app layout
-st.title("Srikar's AI Text Generation Model (Cohere Chat API)")
-st.write("Ask a question or give a prompt, and this app will generate text using Cohere's Chat API.")
+# Streamlit layout
+st.title("Srikar's AI Text Generation Model (Latest Cohere Chat API)")
+st.write("Enter a prompt or question, and the app will generate a response using Cohere's Chat API.")
 
-# User input for prompt
-user_prompt = st.text_area("Enter your prompt or question here:")
+user_prompt = st.text_area("Enter your prompt or question:")
 
 if st.button("Generate Text"):
     if not user_prompt.strip():
-        st.warning("Please enter a prompt or a question to generate text.")
+        st.warning("Please enter a prompt or question.")
     else:
-        with st.spinner("Generating text..."):
+        with st.spinner("Generating response..."):
             try:
-                # Generate text from user prompt using chat API with 'query' parameter
+                # Use the chat method with messages (new API style)
                 response = co.chat(
-                    model="command-xlarge-nightly",  # Use your preferred model
-                    query=user_prompt,
+                    model="command-xlarge-nightly",
+                    messages=[{"role": "user", "content": user_prompt}],
                     max_tokens=150,
-                    temperature=0.75
+                    temperature=0.7,
                 )
-                # Extract generated text from response.message
-                generated_text = response.message
+                generated_text = response.choices[0].message.content
 
                 st.subheader("Generated Text")
                 st.write(generated_text)
 
-                # Semantic similarity: compare embeddings of prompt and generated text
-                st.header("Semantic Similarity Scores (Optional)")
+                # Compute semantic similarity between prompt and generated response
                 embeddings = co.embed(texts=[user_prompt, generated_text]).embeddings
                 similarity = np.dot(embeddings[0], embeddings[1]) / (norm(embeddings[0]) * norm(embeddings[1]))
                 st.metric("Similarity: Prompt vs Generated Text", f"{similarity:.2f}")
 
             except Exception as e:
-                st.error(f"Error generating text or embeddings: {str(e)}")
+                st.error(f"Error while generating text or embeddings: {str(e)}")
