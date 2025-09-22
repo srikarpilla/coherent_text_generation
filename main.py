@@ -8,15 +8,15 @@ import os
 try:
     co = cohere.Client(os.environ.get("COHERE_API_KEY"))
 except KeyError:
-    st.error("Cohere API key not found. Please set the COHERE_API_KEY environment variable in Render.")
+    st.error("Cohere API key not found. Please set the COHERE_API_KEY environment variable.")
     st.stop()
 except Exception as e:
     st.error(f"Failed to initialize Cohere client: {str(e)}")
     st.stop()
 
 # Streamlit app layout
-st.title("Srikar's AI Text Generation Model")
-st.write("Ask a question or give a prompt, and this app will generate text using Cohere's API.")
+st.title("Srikar's AI Text Generation Model (Chat API)")
+st.write("Ask a question or give a prompt, and this app will generate text using Cohere's Chat API.")
 
 # User input for prompt
 user_prompt = st.text_area("Enter your prompt or question here:")
@@ -27,12 +27,16 @@ if st.button("Generate Text"):
     else:
         with st.spinner("Generating text..."):
             try:
-                # Generate text from user prompt
-                generated_text = co.generate(
-                    prompt=user_prompt,
-                    num_generations=1,
-                    max_tokens=150
-                ).generations[0].text
+                # New Chat API usage with co.chat
+                response = co.chat(
+                    model="command-xlarge-nightly",  # or use your preferred model
+                    messages=[
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    max_tokens=150,
+                    temperature=0.75,
+                )
+                generated_text = response.choices[0].message.content
 
                 st.subheader("Generated Text")
                 st.write(generated_text)
