@@ -15,7 +15,7 @@ except Exception as e:
     st.stop()
 
 # Streamlit app layout
-st.title("Srikar's AI Text Generation Model (Chat API)")
+st.title("Srikar's AI Text Generation Model (Cohere Chat API)")
 st.write("Ask a question or give a prompt, and this app will generate text using Cohere's Chat API.")
 
 # User input for prompt
@@ -27,25 +27,24 @@ if st.button("Generate Text"):
     else:
         with st.spinner("Generating text..."):
             try:
-                # New Chat API usage with co.chat
+                # Generate text from user prompt using chat API with 'query' parameter
                 response = co.chat(
-                    model="command-xlarge-nightly",  # or use your preferred model
-                    messages=[
-                        {"role": "user", "content": user_prompt}
-                    ],
+                    model="command-xlarge-nightly",  # Use your preferred model
+                    query=user_prompt,
                     max_tokens=150,
-                    temperature=0.75,
+                    temperature=0.75
                 )
-                generated_text = response.choices[0].message.content
+                # Extract generated text from response.message
+                generated_text = response.message
 
                 st.subheader("Generated Text")
                 st.write(generated_text)
 
-                # Semantic similarity: compare generated text with prompt embedding (optional enhancement)
+                # Semantic similarity: compare embeddings of prompt and generated text
                 st.header("Semantic Similarity Scores (Optional)")
                 embeddings = co.embed(texts=[user_prompt, generated_text]).embeddings
                 similarity = np.dot(embeddings[0], embeddings[1]) / (norm(embeddings[0]) * norm(embeddings[1]))
-                st.metric(f"Similarity: Prompt vs Generated Text", f"{similarity:.2f}")
+                st.metric("Similarity: Prompt vs Generated Text", f"{similarity:.2f}")
 
             except Exception as e:
                 st.error(f"Error generating text or embeddings: {str(e)}")
