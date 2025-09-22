@@ -1,5 +1,0 @@
-streamlit>=1.0.0
-cohere>=4.0
-numpy>=1.20.0
-# Add any other deps if missing, e.g., for similarity calc
-scikit-learn  # Optional, if cosine similarity uses it
